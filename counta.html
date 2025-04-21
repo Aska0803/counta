@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>6項目カウンター</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+    h1 { margin-bottom: 30px; }
+    .counter-box { margin: 15px 0; }
+    .label { font-size: 20px; margin-bottom: 10px; display: block; }
+    .count { font-size: 36px; font-weight: bold; }
+    .btn { font-size: 18px; padding: 10px 25px; margin: 10px 5px; }
+    .reset-btn { background: #c00; color: white; border: none; padding: 10px 30px; font-size: 16px; margin-top: 30px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>6項目カウンター</h1>
+
+  <div id="counters"></div>
+
+  <button class="reset-btn" onclick="resetCounts()">リセット</button>
+
+  <script>
+    const items = ["A", "B", "C", "D", "E", "F"];
+    const counts = {};
+
+    function createCounters() {
+      const container = document.getElementById("counters");
+      items.forEach(item => {
+        counts[item] = 0;
+
+        const box = document.createElement("div");
+        box.className = "counter-box";
+
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = item + "…";
+
+        const countSpan = document.createElement("span");
+        countSpan.className = "count";
+        countSpan.id = `count-${item}`;
+        countSpan.textContent = "0";
+
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = item + " を増やす";
+        btn.onclick = () => increase(item);
+
+        box.appendChild(label);
+        box.appendChild(countSpan);
+        box.appendChild(document.createElement("br"));
+        box.appendChild(btn);
+        container.appendChild(box);
+      });
+    }
+
+    function increase(item) {
+      counts[item]++;
+      document.getElementById(`count-${item}`).textContent = counts[item];
+    }
+
+    function resetCounts() {
+      items.forEach(item => {
+        counts[item] = 0;
+        document.getElementById(`count-${item}`).textContent = "0";
+      });
+    }
+
+    createCounters();
+  </script>
+
+</body>
+</html>
