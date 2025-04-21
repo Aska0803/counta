@@ -17,7 +17,7 @@
 </head>
 <body>
 
-  <h1>6項目カウンター</h1>
+  <h1>設定差カウンター</h1>
 
   <div id="counters"></div>
 
@@ -46,7 +46,7 @@
 
         const btn = document.createElement("button");
         btn.className = "btn";
-        btn.textContent = item + " を増やす";
+        btn.textContent = item + " ＋ ";
         btn.onclick = () => increase(item);
 
         box.appendChild(label);
