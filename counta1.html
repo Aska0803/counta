@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>設定差カウンター</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .counter-box {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      padding: 15px;
+      width: 30%;
+      min-width: 100px;
+    }
+    .label {
+      font-size: 16px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .count {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn {
+      font-size: 20px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<h1>設定差カウンター</h1>
+<div class="grid" id="counters"></div>
+
+<script>
+  const items = ["リ/T2", "リ/D2", "リ/G2", "リ/A2", "リ/B2", "リ/C2"];
+  const counts = {};
+
+  function createCounters() {
+    const container = document.getElementById("counters");
+    items.forEach(item => {
+      counts[item] = 0;
+
+      const box = document.createElement("div");
+      box.className = "counter-box";
+
+      const label = document.createElement("span");
+      label.className = "label";
+      label.textContent = item;
+
+      const countSpan = document.createElement("span");
+      countSpan.className = "count";
+      countSpan.id = `count-${item}`;
+      countSpan.textContent = "0";
+
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "btn-group";
+
+      const plusBtn = document.createElement("button");
+      plusBtn.className = "btn";
+      plusBtn.textContent = "+";
+      plusBtn.onclick = () => update(item, 1);
+
+      const minusBtn = document.createElement("button");
+      minusBtn.className = "btn";
+      minusBtn.textContent = "−";
+      minusBtn.onclick = () => update(item, -1);
+
+      btnGroup.appendChild(plusBtn);
+      btnGroup.appendChild(minusBtn);
+
+      box.appendChild(label);
+      box.appendChild(countSpan);
+      box.appendChild(btnGroup);
+      container.appendChild(box);
+    });
+  }
+
+  function update(item, delta) {
+    counts[item] += delta;
+    if (counts[item] < 0) counts[item] = 0;
+    document.getElementById(`count-${item}`).textContent = counts[item];
+  }
+
+  createCounters();
+</script>
+
+</body>
+</html>
