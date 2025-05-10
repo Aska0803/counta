@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>設定差カウンター</title>
+  <title>COUNTER</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -65,18 +65,23 @@
 </head>
 <body>
 
-<h1>設定差カウンター</h1>
+<h1>COUNTER</h1>
 <div class="grid" id="counters"></div>
 <button class="reset-btn" onclick="resetCounts()">リセット</button>
 
 <script>
-  const items = ["リ/T2", "リ/D2", "リ/G2", "リ/A2", "リ/T3", "フ/D2"];
+  const items = ["リ/T2", "リ/D2", "リ/G2", "リ/A2", "リ/B2", "リ/C2"];
   const counts = {};
 
   function createCounters() {
+    const saved = localStorage.getItem("counterData");
+    if (saved) {
+      Object.assign(counts, JSON.parse(saved));
+    }
+
     const container = document.getElementById("counters");
     items.forEach(item => {
-      counts[item] = 0;
+      if (!(item in counts)) counts[item] = 0;
 
       const box = document.createElement("div");
       box.className = "counter-box";
@@ -88,7 +93,7 @@
       const countSpan = document.createElement("span");
       countSpan.className = "count";
       countSpan.id = `count-${item}`;
-      countSpan.textContent = "0";
+      countSpan.textContent = counts[item];
 
       const btnGroup = document.createElement("div");
       btnGroup.className = "btn-group";
@@ -117,6 +122,7 @@
     counts[item] += delta;
     if (counts[item] < 0) counts[item] = 0;
     document.getElementById(`count-${item}`).textContent = counts[item];
+    localStorage.setItem("counterData", JSON.stringify(counts));
   }
 
   function resetCounts() {
@@ -124,6 +130,7 @@
       counts[item] = 0;
       document.getElementById(`count-${item}`).textContent = "0";
     });
+    localStorage.setItem("counterData", JSON.stringify(counts));
   }
 
   createCounters();
