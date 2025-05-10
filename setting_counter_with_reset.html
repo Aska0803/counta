@@ -3,37 +3,89 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>COUNTER</title>
+  <title>設定差カウンター＋確率一覧</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-    h1 { margin-bottom: 20px; }
-    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+    }
     .counter-box, .prob-box {
-      background: #fff; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      padding: 15px; width: 45%; min-width: 140px; margin-bottom: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      padding: 15px;
+      width: 48%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
     }
-    .label { font-size: 16px; margin-bottom: 5px; display: block; }
-    .count { font-size: 28px; font-weight: bold; margin: 10px 0; }
-    .btn-group { display: flex; justify-content: center; gap: 10px; }
-    .btn, .nav-btn {
-      font-size: 18px; padding: 6px 14px; border: none; border-radius: 6px;
-      background: #007bff; color: white; cursor: pointer;
+    .label {
+      font-size: 16px;
+      margin-bottom: 5px;
+      display: block;
     }
-    .reset-btn { margin: 20px 10px 0; padding: 10px 30px; font-size: 16px;
-      background-color: #dc3545; }
-    .list-btn { margin-top: 20px; padding: 10px 20px; }
-    .nav-btn { background: #28a745; margin-bottom: 20px; }
-    #probList { display: none; }
-    .prob-list { text-align: left; }
-    .prob-list span { display: block; margin: 4px 0; }
+    .count {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn {
+      font-size: 20px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+    }
+    .reset-btn, .list-btn {
+      margin: 20px 10px 0;
+      padding: 10px 30px;
+      font-size: 18px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .list-btn {
+      background-color: #28a745;
+    }
+    .nav-btn {
+      font-size: 18px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    #probList {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
   <!-- カウンターページ -->
   <div id="counterPage">
-    <h1>設定差カウンター（保存対応）</h1>
+    <h1> COUNTER </h1>
     <div class="grid" id="counters"></div>
     <button class="reset-btn" onclick="resetCounts()">リセット</button>
     <button class="list-btn" onclick="showList()">確率一覧</button>
@@ -46,70 +98,56 @@
     <div class="grid">
       <div class="prob-box">
         <div class="label">T2</div>
-        <div class="prob-list">
-          <span>1/1337</span>
-          <span>1/1310</span>
-          <span>1/1074</span>
-          <span>1/851</span>
-        </div>
+        <div>1/1337</div>
+        <div>1/1310</div>
+        <div>1/1074</div>
+        <div>1/851</div>
       </div>
       <div class="prob-box">
         <div class="label">T3(異色)</div>
-        <div class="prob-list">
-          <span>1/16384</span>
-          <span>1/13107</span>
-          <span>1/8192</span>
-          <span>1/5461</span>
-        </div>
+        <div>1/16384</div>
+        <div>1/13107</div>
+        <div>1/8192</div>
+        <div>1/5461</div>
       </div>
       <div class="prob-box">
         <div class="label">A2(異色)</div>
-        <div class="prob-list">
-          <span>1/16384</span>
-          <span>1/13107</span>
-          <span>1/8192</span>
-          <span>1/5461</span>
-        </div>
+        <div>1/16384</div>
+        <div>1/13107</div>
+        <div>1/8192</div>
+        <div>1/5461</div>
       </div>
       <div class="prob-box">
         <div class="label">リ/D2</div>
-        <div class="prob-list">
-          <span>1/2340</span>
-          <span>1/2259</span>
-          <span>1/1820</span>
-          <span>1/1560</span>
-        </div>
+        <div>1/2340</div>
+        <div>1/2259</div>
+        <div>1/1820</div>
+        <div>1/1560</div>
       </div>
       <div class="prob-box">
         <div class="label">G2</div>
-        <div class="prob-list">
-          <span>1/3276</span>
-          <span>1/3120</span>
-          <span>1/2730</span>
-          <span>1/2340</span>
-        </div>
+        <div>1/3276</div>
+        <div>1/3120</div>
+        <div>1/2730</div>
+        <div>1/2340</div>
       </div>
       <div class="prob-box">
-        <div class="label">フ/D2(チェリー)</div>
-        <div class="prob-list">
-          <span>1/3276.8</span>
-          <span>1/2978.9</span>
-          <span>1/2340.6</span>
-          <span>1/1927.5</span>
-        </div>
+        <div class="label">フ/D2(🍒)</div>
+        <div>1/3276.8</div>
+        <div>1/2978.9</div>
+        <div>1/2340.6</div>
+        <div>1/1927.5</div>
       </div>
     </div>
   </div>
 
   <script>
-    // カウンターの保存対応コード
     const items = ["リ/T2", "リ/D2", "リ/G2", "リ/A2", "リ/B2", "リ/C2"];
     const counts = {};
 
     function createCounters() {
       const saved = localStorage.getItem("counterData");
       if (saved) Object.assign(counts, JSON.parse(saved));
-
       const container = document.getElementById("counters");
       items.forEach(item => {
         if (!(item in counts)) counts[item] = 0;
@@ -139,7 +177,6 @@
       document.querySelectorAll('.count').forEach(el => el.textContent = "0");
       localStorage.setItem("counterData", JSON.stringify(counts));
     }
-    // ページ遷移
     function showList() {
       document.getElementById("counterPage").style.display = "none";
       document.getElementById("probList").style.display = "block";
