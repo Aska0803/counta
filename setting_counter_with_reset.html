@@ -6,135 +6,150 @@
   <title>COUNTER</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 20px;
-      background: #f4f4f4;
+    body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+    h1 { margin-bottom: 20px; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+    .counter-box, .prob-box {
+      background: #fff; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      padding: 15px; width: 45%; min-width: 140px; margin-bottom: 20px;
     }
-    h1 {
-      margin-bottom: 30px;
+    .label { font-size: 16px; margin-bottom: 5px; display: block; }
+    .count { font-size: 28px; font-weight: bold; margin: 10px 0; }
+    .btn-group { display: flex; justify-content: center; gap: 10px; }
+    .btn, .nav-btn {
+      font-size: 18px; padding: 6px 14px; border: none; border-radius: 6px;
+      background: #007bff; color: white; cursor: pointer;
     }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-    .counter-box {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      padding: 15px;
-      width: 30%;
-      min-width: 100px;
-    }
-    .label {
-      font-size: 16px;
-      margin-bottom: 5px;
-      display: block;
-    }
-    .count {
-      font-size: 28px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-    .btn-group {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .btn {
-      font-size: 20px;
-      padding: 6px 14px;
-      border: none;
-      border-radius: 6px;
-      background: #007bff;
-      color: white;
-    }
-    .reset-btn {
-      margin-top: 30px;
-      padding: 10px 30px;
-      font-size: 18px;
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 8px;
-    }
+    .reset-btn { margin: 20px 10px 0; padding: 10px 30px; font-size: 16px;
+      background-color: #dc3545; }
+    .list-btn { margin-top: 20px; padding: 10px 20px; }
+    .nav-btn { background: #28a745; margin-bottom: 20px; }
+    #probList { display: none; }
+    .prob-list { text-align: left; }
+    .prob-list span { display: block; margin: 4px 0; }
   </style>
 </head>
 <body>
 
-<h1>COUNTER</h1>
-<div class="grid" id="counters"></div>
-<button class="reset-btn" onclick="resetCounts()">リセット</button>
+  <!-- カウンターページ -->
+  <div id="counterPage">
+    <h1>設定差カウンター（保存対応）</h1>
+    <div class="grid" id="counters"></div>
+    <button class="reset-btn" onclick="resetCounts()">リセット</button>
+    <button class="list-btn" onclick="showList()">確率一覧</button>
+  </div>
 
-<script>
-  const items = ["リ/T2", "リ/D2", "リ/G2", "リ/A2", "リ/B2", "リ/C2"];
-  const counts = {};
+  <!-- 確率一覧ページ -->
+  <div id="probList">
+    <button class="nav-btn" onclick="showCounter()">＜ 戻る</button>
+    <h1>確率一覧</h1>
+    <div class="grid">
+      <div class="prob-box">
+        <div class="label">T2</div>
+        <div class="prob-list">
+          <span>1/1337</span>
+          <span>1/1310</span>
+          <span>1/1074</span>
+          <span>1/851</span>
+        </div>
+      </div>
+      <div class="prob-box">
+        <div class="label">T3(異色)</div>
+        <div class="prob-list">
+          <span>1/16384</span>
+          <span>1/13107</span>
+          <span>1/8192</span>
+          <span>1/5461</span>
+        </div>
+      </div>
+      <div class="prob-box">
+        <div class="label">A2(異色)</div>
+        <div class="prob-list">
+          <span>1/16384</span>
+          <span>1/13107</span>
+          <span>1/8192</span>
+          <span>1/5461</span>
+        </div>
+      </div>
+      <div class="prob-box">
+        <div class="label">リ/D2</div>
+        <div class="prob-list">
+          <span>1/2340</span>
+          <span>1/2259</span>
+          <span>1/1820</span>
+          <span>1/1560</span>
+        </div>
+      </div>
+      <div class="prob-box">
+        <div class="label">G2</div>
+        <div class="prob-list">
+          <span>1/3276</span>
+          <span>1/3120</span>
+          <span>1/2730</span>
+          <span>1/2340</span>
+        </div>
+      </div>
+      <div class="prob-box">
+        <div class="label">フ/D2(チェリー)</div>
+        <div class="prob-list">
+          <span>1/3276.8</span>
+          <span>1/2978.9</span>
+          <span>1/2340.6</span>
+          <span>1/1927.5</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  function createCounters() {
-    const saved = localStorage.getItem("counterData");
-    if (saved) {
-      Object.assign(counts, JSON.parse(saved));
+  <script>
+    // カウンターの保存対応コード
+    const items = ["リ/T2", "リ/D2", "リ/G2", "リ/A2", "リ/B2", "リ/C2"];
+    const counts = {};
+
+    function createCounters() {
+      const saved = localStorage.getItem("counterData");
+      if (saved) Object.assign(counts, JSON.parse(saved));
+
+      const container = document.getElementById("counters");
+      items.forEach(item => {
+        if (!(item in counts)) counts[item] = 0;
+        const box = document.createElement("div"); box.className = "counter-box";
+        const label = document.createElement("span"); label.className = "label";
+        label.textContent = item;
+        const countSpan = document.createElement("span");
+        countSpan.className = "count"; countSpan.id = `count-${item}`;
+        countSpan.textContent = counts[item];
+        const btnGroup = document.createElement("div"); btnGroup.className = "btn-group";
+        const plusBtn = document.createElement("button"); plusBtn.className = "btn";
+        plusBtn.textContent = "+"; plusBtn.onclick = () => update(item, 1);
+        const minusBtn = document.createElement("button"); minusBtn.className = "btn";
+        minusBtn.textContent = "−"; minusBtn.onclick = () => update(item, -1);
+        btnGroup.append(plusBtn, minusBtn);
+        box.append(label, countSpan, btnGroup);
+        container.appendChild(box);
+      });
     }
-
-    const container = document.getElementById("counters");
-    items.forEach(item => {
-      if (!(item in counts)) counts[item] = 0;
-
-      const box = document.createElement("div");
-      box.className = "counter-box";
-
-      const label = document.createElement("span");
-      label.className = "label";
-      label.textContent = item;
-
-      const countSpan = document.createElement("span");
-      countSpan.className = "count";
-      countSpan.id = `count-${item}`;
-      countSpan.textContent = counts[item];
-
-      const btnGroup = document.createElement("div");
-      btnGroup.className = "btn-group";
-
-      const plusBtn = document.createElement("button");
-      plusBtn.className = "btn";
-      plusBtn.textContent = "+";
-      plusBtn.onclick = () => update(item, 1);
-
-      const minusBtn = document.createElement("button");
-      minusBtn.className = "btn";
-      minusBtn.textContent = "−";
-      minusBtn.onclick = () => update(item, -1);
-
-      btnGroup.appendChild(plusBtn);
-      btnGroup.appendChild(minusBtn);
-
-      box.appendChild(label);
-      box.appendChild(countSpan);
-      box.appendChild(btnGroup);
-      container.appendChild(box);
-    });
-  }
-
-  function update(item, delta) {
-    counts[item] += delta;
-    if (counts[item] < 0) counts[item] = 0;
-    document.getElementById(`count-${item}`).textContent = counts[item];
-    localStorage.setItem("counterData", JSON.stringify(counts));
-  }
-
-  function resetCounts() {
-    items.forEach(item => {
-      counts[item] = 0;
-      document.getElementById(`count-${item}`).textContent = "0";
-    });
-    localStorage.setItem("counterData", JSON.stringify(counts));
-  }
-
-  createCounters();
-</script>
+    function update(item, delta) {
+      counts[item] = Math.max(0, counts[item] + delta);
+      document.getElementById(`count-${item}`).textContent = counts[item];
+      localStorage.setItem("counterData", JSON.stringify(counts));
+    }
+    function resetCounts() {
+      items.forEach(item => counts[item] = 0);
+      document.querySelectorAll('.count').forEach(el => el.textContent = "0");
+      localStorage.setItem("counterData", JSON.stringify(counts));
+    }
+    // ページ遷移
+    function showList() {
+      document.getElementById("counterPage").style.display = "none";
+      document.getElementById("probList").style.display = "block";
+    }
+    function showCounter() {
+      document.getElementById("probList").style.display = "none";
+      document.getElementById("counterPage").style.display = "block";
+    }
+    createCounters();
+  </script>
 
 </body>
 </html>
