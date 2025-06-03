@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>設定差カウンター＋確率一覧</title>
+  <title>マルチページカウンター＋確率一覧</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -51,104 +51,158 @@
       border-radius: 6px;
       background: #007bff;
       color: white;
+      cursor: pointer;
     }
-    .reset-btn, .list-btn {
+    .nav-btn, .next-btn, .reset-btn {
       margin: 20px 10px 0;
       padding: 10px 30px;
       font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .reset-btn {
       background-color: #dc3545;
       color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
     }
-    .list-btn {
+    .next-btn {
       background-color: #28a745;
+      color: white;
     }
     .nav-btn {
-      font-size: 18px;
-      padding: 10px 30px;
-      border: none;
-      border-radius: 8px;
-      background: #007bff;
+      background-color: #007bff;
       color: white;
-      cursor: pointer;
-      margin: 20px 0;
     }
-    #probList {
+    #counterPage2, #probList {
       display: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- カウンターページ -->
-  <div id="counterPage">
-    <h1> COUNTER </h1>
-    <div class="grid" id="counters"></div>
-    <button class="reset-btn" onclick="resetCounts()">リセット</button>
-    <button class="list-btn" onclick="showList()">確率一覧</button>
+  <!-- 1ページ目：既存の6項目カウンター -->
+  <div id="counterPage1">
+    <h1>COUNTER ページ1</h1>
+    <div class="grid" id="counters1"></div>
+    <button class="reset-btn" onclick="resetCounts(1)">リセット</button>
+    <button class="next-btn" onclick="showPage(2)">次へ</button>
   </div>
 
-  <!-- 確率一覧ページ -->
+  <!-- 2ページ目：4項目カウンター -->
+  <div id="counterPage2">
+    <h1>RB COUNTER ページ2</h1>
+    <div class="grid" id="counters2"></div>
+    <button class="reset-btn" onclick="resetCounts(2)">リセット</button>
+    <button class="nav-btn" onclick="showPage(1)">＜ 戻る</button>
+    <button class="next-btn" onclick="showPage(3)">次へ</button>
+  </div>
+
+  <!-- 3ページ目：確率一覧 -->
   <div id="probList">
-    <button class="nav-btn" onclick="showCounter()">＜ 戻る</button>
-    <h1>probability</h1>
+    <h1>probability ページ3</h1>
     <div class="grid">
       <div class="prob-box"><div class="label">T2</div><div>1/1337</div><div>1/1310</div><div>1/1074</div><div>1/851</div></div>
-       <div class="prob-box"><div class="label">リ/D2</div><div>1/2340</div><div>1/2259</div><div>1/1820</div><div>1/1560</div></div>
+      <div class="prob-box"><div class="label">リ/D2</div><div>1/2340</div><div>1/2259</div><div>1/1820</div><div>1/1560</div></div>
       <div class="prob-box"><div class="label">T3(異色)</div><div>1/16384</div><div>1/13107</div><div>1/8192</div><div>1/5461</div></div>
       <div class="prob-box"><div class="label">A2(異色)</div><div>1/16384</div><div>1/13107</div><div>1/8192</div><div>1/5461</div></div>
-     <div class="prob-box"><div class="label">リ/G2</div><div>1/3276</div><div>1/3120</div><div>1/2730</div><div>1/2340</div></div>
+      <div class="prob-box"><div class="label">リ/G2</div><div>1/3276</div><div>1/3120</div><div>1/2730</div><div>1/2340</div></div>
       <div class="prob-box"><div class="label">フ/D2(🍒)</div><div>1/3276</div><div>1/2978</div><div>1/2340</div><div>1/1927</div></div>
     </div>
-    <button class="nav-btn" onclick="showCounter()">＜ 戻る</button>
+    <button class="nav-btn" onclick="showPage(2)">＜ 戻る</button>
   </div>
 
   <script>
-    const items = ["リ/T2", "リ/D2", "リ/T3", "リ/A2", "リ/G2", "フ/D2"];
-    const counts = {};
+    // 1ページ目：6項目カウンター
+    const items1 = ["リ/T2", "リ/D2", "リ/T3", "リ/A2", "リ/G2", "フ/D2"];
+    let counts1 = {};
+    // 2ページ目：4項目カウンター
+    const items2 = ["Nice", "Good", "ミア", "リーゼント"];
+    let counts2 = {};
 
     function createCounters() {
-      const saved = localStorage.getItem("counterData");
-      if (saved) Object.assign(counts, JSON.parse(saved));
-      const container = document.getElementById("counters");
-      items.forEach(item => {
-        if (!(item in counts)) counts[item] = 0;
+      // ページ1用データ復元
+      const saved1 = localStorage.getItem("counterData1");
+      if (saved1) counts1 = JSON.parse(saved1);
+      items1.forEach(item => {
+        if (!(item in counts1)) counts1[item] = 0;
+      });
+
+      // ページ2用データ復元
+      const saved2 = localStorage.getItem("counterData2");
+      if (saved2) counts2 = JSON.parse(saved2);
+      items2.forEach(item => {
+        if (!(item in counts2)) counts2[item] = 0;
+      });
+
+      // ページ1生成
+      const container1 = document.getElementById("counters1");
+      items1.forEach(item => {
         const box = document.createElement("div"); box.className = "counter-box";
         const label = document.createElement("span"); label.className = "label";
         label.textContent = item;
         const countSpan = document.createElement("span");
-        countSpan.className = "count"; countSpan.id = `count-${item}`;
-        countSpan.textContent = counts[item];
+        countSpan.className = "count"; countSpan.id = `count1-${item}`;
+        countSpan.textContent = counts1[item];
         const btnGroup = document.createElement("div"); btnGroup.className = "btn-group";
         const plusBtn = document.createElement("button"); plusBtn.className = "btn";
-        plusBtn.textContent = "+"; plusBtn.onclick = () => update(item, 1);
+        plusBtn.textContent = "+"; plusBtn.onclick = () => updateCount(1, item, 1);
         const minusBtn = document.createElement("button"); minusBtn.className = "btn";
-        minusBtn.textContent = "−"; minusBtn.onclick = () => update(item, -1);
+        minusBtn.textContent = "−"; minusBtn.onclick = () => updateCount(1, item, -1);
         btnGroup.append(plusBtn, minusBtn);
         box.append(label, countSpan, btnGroup);
-        container.appendChild(box);
+        container1.appendChild(box);
+      });
+
+      // ページ2生成
+      const container2 = document.getElementById("counters2");
+      items2.forEach(item => {
+        const box = document.createElement("div"); box.className = "counter-box";
+        const label = document.createElement("span"); label.className = "label";
+        label.textContent = item;
+        const countSpan = document.createElement("span");
+        countSpan.className = "count"; countSpan.id = `count2-${item}`;
+        countSpan.textContent = counts2[item];
+        const btnGroup = document.createElement("div"); btnGroup.className = "btn-group";
+        const plusBtn = document.createElement("button"); plusBtn.className = "btn";
+        plusBtn.textContent = "+"; plusBtn.onclick = () => updateCount(2, item, 1);
+        const minusBtn = document.createElement("button"); minusBtn.className = "btn";
+        minusBtn.textContent = "−"; minusBtn.onclick = () => updateCount(2, item, -1);
+        btnGroup.append(plusBtn, minusBtn);
+        box.append(label, countSpan, btnGroup);
+        container2.appendChild(box);
       });
     }
-    function update(item, delta) {
-      counts[item] = Math.max(0, counts[item] + delta);
-      document.getElementById(`count-${item}`).textContent = counts[item];
-      localStorage.setItem("counterData", JSON.stringify(counts));
+
+    function updateCount(page, item, delta) {
+      if (page === 1) {
+        counts1[item] = Math.max(0, (counts1[item] || 0) + delta);
+        document.getElementById(`count1-${item}`).textContent = counts1[item];
+        localStorage.setItem("counterData1", JSON.stringify(counts1));
+      } else if (page === 2) {
+        counts2[item] = Math.max(0, (counts2[item] || 0) + delta);
+        document.getElementById(`count2-${item}`).textContent = counts2[item];
+        localStorage.setItem("counterData2", JSON.stringify(counts2));
+      }
     }
-    function resetCounts() {
-      items.forEach(item => counts[item] = 0);
-      document.querySelectorAll('.count').forEach(el => el.textContent = "0");
-      localStorage.setItem("counterData", JSON.stringify(counts));
+
+    function resetCounts(page) {
+      if (page === 1) {
+        items1.forEach(item => counts1[item] = 0);
+        document.querySelectorAll('#counters1 .count').forEach(el => el.textContent = "0");
+        localStorage.setItem("counterData1", JSON.stringify(counts1));
+      } else if (page === 2) {
+        items2.forEach(item => counts2[item] = 0);
+        document.querySelectorAll('#counters2 .count').forEach(el => el.textContent = "0");
+        localStorage.setItem("counterData2", JSON.stringify(counts2));
+      }
     }
-    function showList() {
-      document.getElementById("counterPage").style.display = "none";
-      document.getElementById("probList").style.display = "block";
+
+    function showPage(num) {
+      document.getElementById("counterPage1").style.display = num === 1 ? "block" : "none";
+      document.getElementById("counterPage2").style.display = num === 2 ? "block" : "none";
+      document.getElementById("probList").style.display = num === 3 ? "block" : "none";
     }
-    function showCounter() {
-      document.getElementById("probList").style.display = "none";
-      document.getElementById("counterPage").style.display = "block";
-    }
+
     createCounters();
   </script>
 
