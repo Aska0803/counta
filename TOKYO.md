@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カウンター＋確率一覧</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>
+    :root{
+      --tap: 44px;
+      --radius: 14px;
+      --gap: 12px;
+    }
+
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 16px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      background: #f4f4f4;
+      margin: 0;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    h1 {
+      font-size: clamp(18px, 4.5vw, 24px);
+      margin: 10px 0 16px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--gap);
+    }
+
+    .counter-box, .prob-box {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      padding: 14px;
+      width: calc(50% - (var(--gap) / 2));
+      box-sizing: border-box;
+      margin-bottom: 8px;
+    }
+
+    .label {
+      font-size: clamp(14px, 3.6vw, 16px);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .count {
+      font-size: clamp(26px, 7vw, 34px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 10px 0;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn {
+      min-height: var(--tap);
+      min-width: var(--tap);
+      font-size: 22px;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:active{
+      transform: scale(0.98);
+    }
+
+    .nav-btn, .next-btn, .reset-btn {
+      min-height: var(--tap);
+      margin: 18px 8px 0;
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-btn:active, .next-btn:active, .reset-btn:active{
+      transform: scale(0.99);
+    }
+
+    .reset-btn {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .next-btn {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .nav-btn {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    #counterPage2, #probList {
+      display: none;
+    }
+
+    @media (max-width: 360px){
+      .counter-box, .prob-box{
+        width: 100%;
+      }
+    }
+
+    @media (orientation: landscape){
+      .counter-box, .prob-box{
+        width: calc(33.333% - (var(--gap) * 2 / 3));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="counterPage1">
+    <h1>COUNTER ページ1</h1>
+    <div class="grid" id="counters1"></div>
+    <button class="reset-btn" onclick="resetCounts(1)">リセット</button>
+    <button class="next-btn" onclick="showPage(2)">次へ</button>
+  </div>
+
+  <div id="counterPage2">
+    <h1>COUNTER ページ2</h1>
+    <div class="grid" id="counters2"></div>
+    <button class="reset-btn" onclick="resetCounts(2)">リセット</button>
+    <button class="nav-btn" onclick="showPage(1)">＜ 戻る</button>
+    <button class="next-btn" onclick="showPage(3)">次へ</button>
+  </div>
+
+  <div id="probList">
+    <h1>probability ページ3</h1>
+    <div class="grid">
+      <div class="prob-box"><div class="label">リゼ</div><div>1/2079</div><div>1/1906</div><div>1/1722</div><div>1/1478</div><div>1/1226</div><div>1/1074</div></div>
+      <div class="prob-box"><div class="label">直撃</div><div>1/28460</div><div>1/24453</div><div>1/18093</div><div>1/12019</div><div>1/8615</div><div>1/7036</div></div>
+      <div class="prob-box"><div class="label">エピボ</div><div>1/6620</div><div>1/5879</div><div>1/5114</div><div>1/4062</div><div>1/3166</div><div>1/2639</div></div>
+      <div class="prob-box"><div class="label">裏</div><div>1.1％</div><div>1.32％</div><div>1.63％</div><div>2.19％</div><div>2.85％</div><div>3.32％</div></div>
+    </div>
+    <button class="nav-btn" onclick="showPage(2)">＜ 戻る</button>
+    <button class="nav-btn" onclick="showPage(1)">ページ1に戻る</button>
+  </div>
+
+  <script>
+    const items1 = ["100G", "200G", "300G", "400G", "500G", "600G"];
+    const items2 = ["レミ", "リゼ", "直撃", "小役解除", "偶数", "奇数"];
+
+    let counts1 = {};
+    let counts2 = {};
+
+    function createCounters() {
+      const saved1 = localStorage.getItem("counterData1");
+      if (saved1) counts1 = JSON.parse(saved1);
+      items1.forEach(item => {
+        if (!(item in counts1)) counts1[item] = 0;
+      });
+
+      const saved2 = localStorage.getItem("counterData2");
+      if (saved2) counts2 = JSON.parse(saved2);
+      items2.forEach(item => {
+        if (!(item in counts2)) counts2[item] = 0;
+      });
+
+      const container1 = document.getElementById("counters1");
+      container1.innerHTML = "";
+      items1.forEach((item, idx) => {
+        const box = document.createElement("div");
+        box.className = "counter-box";
+
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = item;
+
+        const countSpan = document.createElement("span");
+        countSpan.className = "count";
+        countSpan.id = `count1-${idx}`;
+        countSpan.textContent = counts1[item];
+
+        const btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
+
+        const plusBtn = document.createElement("button");
+        plusBtn.className = "btn";
+        plusBtn.textContent = "+";
+        plusBtn.onclick = () => updateCount(1, item, idx, 1);
+
+        const minusBtn = document.createElement("button");
+        minusBtn.className = "btn";
+        minusBtn.textContent = "−";
+        minusBtn.onclick = () => updateCount(1, item, idx, -1);
+
+        btnGroup.append(plusBtn, minusBtn);
+        box.append(label, countSpan, btnGroup);
+        container1.appendChild(box);
+      });
+
+      const container2 = document.getElementById("counters2");
+      container2.innerHTML = "";
+      items2.forEach((item, idx) => {
+        const box = document.createElement("div");
+        box.className = "counter-box";
+
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = item;
+
+        const countSpan = document.createElement("span");
+        countSpan.className = "count";
+        countSpan.id = `count2-${idx}`;
+        countSpan.textContent = counts2[item];
+
+        const btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
+
+        const plusBtn = document.createElement("button");
+        plusBtn.className = "btn";
+        plusBtn.textContent = "+";
+        plusBtn.onclick = () => updateCount(2, item, idx, 1);
+
+        const minusBtn = document.createElement("button");
+        minusBtn.className = "btn";
+        minusBtn.textContent = "−";
+        minusBtn.onclick = () => updateCount(2, item, idx, -1);
+
+        btnGroup.append(plusBtn, minusBtn);
+        box.append(label, countSpan, btnGroup);
+        container2.appendChild(box);
+      });
+    }
+
+    function updateCount(page, item, idx, delta) {
+      if (page === 1) {
+        counts1[item] = Math.max(0, (counts1[item] || 0) + delta);
+        document.getElementById(`count1-${idx}`).textContent = counts1[item];
+        localStorage.setItem("counterData1", JSON.stringify(counts1));
+      } else {
+        counts2[item] = Math.max(0, (counts2[item] || 0) + delta);
+        document.getElementById(`count2-${idx}`).textContent = counts2[item];
+        localStorage.setItem("counterData2", JSON.stringify(counts2));
+      }
+    }
+
+    function resetCounts(page) {
+      if (page === 1) {
+        items1.forEach(item => counts1[item] = 0);
+        items1.forEach((item, idx) => {
+          document.getElementById(`count1-${idx}`).textContent = "0";
+        });
+        localStorage.setItem("counterData1", JSON.stringify(counts1));
+      } else {
+        items2.forEach(item => counts2[item] = 0);
+        items2.forEach((item, idx) => {
+          document.getElementById(`count2-${idx}`).textContent = "0";
+        });
+        localStorage.setItem("counterData2", JSON.stringify(counts2));
+      }
+    }
+
+    function showPage(num) {
+      document.getElementById("counterPage1").style.display = num === 1 ? "block" : "none";
+      document.getElementById("counterPage2").style.display = num === 2 ? "block" : "none";
+      document.getElementById("probList").style.display = num === 3 ? "block" : "none";
+    }
+
+    createCounters();
+  </script>
+
+</body>
+</html>
